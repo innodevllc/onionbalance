@@ -323,12 +323,13 @@ class OnionBalanceService(object):
         # Derive blinding parameter
             _, time_period_number = hashring.get_srv_and_time_period(is_first_desc)
             blinding_param = my_onionbalance.consensus.get_blinding_param(self._get_identity_pubkey_bytes(), time_period_number)
-            blinded_key = desc.get_blinded_key()
+            
             
             try:
                 desc = descriptor.OBDescriptor(self.onion_address, self.identity_priv_key, blinding_param, [], is_first_desc)
             except descriptor.BadDescriptor:
                 return
+            blinded_key = desc.get_blinded_key()
             try:
                 responsible_hsdirs = hashring.get_responsible_hsdirs(blinded_key, is_first_desc)
             except hashring.EmptyHashRing:
