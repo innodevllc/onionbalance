@@ -316,10 +316,10 @@ class OnionBalanceService(object):
         """
         from onionbalance.hs_v3.onionbalance import my_onionbalance
 
-        max_intro_points = 10
-        distinct_descriptors = True
+        max_intro_points = params.MAX_INTRO_POINTS
+        distinct_descriptors = params.DISTINCT_DESCRIPTORS
 
-        if distinct_descriptors:
+        if distinct_descriptors: # TODO, ensure this mode is needed
             blinded_key = desc.get_blinded_key()
             try:
                 responsible_hsdirs = hashring.get_responsible_hsdirs(blinded_key, is_first_desc)
@@ -328,7 +328,7 @@ class OnionBalanceService(object):
                 return
             for hsdir in responsible_hsdirs:   
                 try:
-                    intro_points = self._get_intros_for_distinct_desc()
+                    intro_points = self._get_intros_for_distinct_desc(max_intro_points)
                 except NotEnoughIntros:
                     return
                  # Derive blinding parameter
