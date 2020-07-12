@@ -320,7 +320,15 @@ class OnionBalanceService(object):
         distinct_descriptors = params.DISTINCT_DESCRIPTORS
 
         if distinct_descriptors: # TODO, ensure this mode is needed
+        # Derive blinding parameter
+            _, time_period_number = hashring.get_srv_and_time_period(is_first_desc)
+            blinding_param = my_onionbalance.consensus.get_blinding_param(self._get_identity_pubkey_bytes(), time_period_number)
             blinded_key = desc.get_blinded_key()
+            
+            try:
+                desc = descriptor.OBDescriptor(self.onion_address, self.identity_priv_key, blinding_param, [], is_first_desc)
+            except descriptor.BadDescriptor:
+                return
             try:
                 responsible_hsdirs = hashring.get_responsible_hsdirs(blinded_key, is_first_desc)
             except hashring.EmptyHashRing:
@@ -331,11 +339,6 @@ class OnionBalanceService(object):
                     intro_points = self._get_intros_for_distinct_desc(max_intro_points)
                 except NotEnoughIntros:
                     return
-                 # Derive blinding parameter
-                _, time_period_number = hashring.get_srv_and_time_period(is_first_desc)
-                blinding_param = my_onionbalance.consensus.get_blinding_param(self._get_identity_pubkey_bytes(),
-                                                                              time_period_number)
-
                 try:
                     desc = descriptor.OBDescriptor(self.onion_address, self.identity_priv_key,
                                                    blinding_param, intro_points, is_first_desc)
