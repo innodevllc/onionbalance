@@ -317,9 +317,13 @@ class OnionBalanceService(object):
         from onionbalance.hs_v3.onionbalance import my_onionbalance
 
         max_intro_points = params.MAX_INTRO_POINTS
-        distinct_descriptors = params.DISTINCT_DESCRIPTORS
 
-        if distinct_descriptors: # TODO, ensure this mode is needed
+        distinct_descriptors = params.DISTINCT_DESCRIPTORS
+        if len(self.get_all_intros_for_publish()) <= params.MAX_INTRO_POINTS:
+            distinct_descriptors = False
+
+
+        if distinct_descriptors:
         # Derive blinding parameter
             _, time_period_number = hashring.get_srv_and_time_period(is_first_desc)
             blinding_param = my_onionbalance.consensus.get_blinding_param(self._get_identity_pubkey_bytes(), time_period_number)
