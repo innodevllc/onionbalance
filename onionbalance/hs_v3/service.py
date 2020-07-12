@@ -340,6 +340,7 @@ class OnionBalanceService(object):
                     intro_points = self._get_intros_for_distinct_desc(max_intro_points)
                 except NotEnoughIntros:
                     return
+                logger.info("uploading a distinct descriptor")
                 try:
                     desc = descriptor.OBDescriptor(self.onion_address, self.identity_priv_key,
                                                    blinding_param, intro_points, is_first_desc)
